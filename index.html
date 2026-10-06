@@ -274,6 +274,28 @@ footer .script { font: 400 26px/1 var(--f-script); color: var(--gold); display: 
   font-size: 14px; font-weight: 500; box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
 }
 
+
+.fab {
+  position: fixed;
+  right: 20px;
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: 40;
+  width: 64px; height: 64px;
+  border-radius: 50%;
+  border: 0;
+  display: grid; place-items: center;
+  background: var(--gold);
+  color: var(--night);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .45), 0 0 0 6px rgba(233, 196, 111, .18);
+  transition: transform .15s;
+}
+.fab:hover { transform: scale(1.06); }
+.fab:disabled { opacity: .6; cursor: progress; }
+.fab svg { width: 30px; height: 30px; }
+.fab.busy svg { animation: spin 1.2s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+footer { padding-bottom: 110px !important; }
+
 @media (max-width: 520px) {
   .hero { min-height: 380px; }
   .hero-inner { padding: 36px 16px 170px; }
@@ -282,7 +304,8 @@ footer .script { font: 400 26px/1 var(--f-script); color: var(--gold); display: 
   .lb-nav { width: 40px; height: 40px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .tile img, .tile video, .btn { transition: none; }
+  .tile img, .tile video, .btn, .fab { transition: none; }
+  .fab.busy svg { animation: none; }
 }
 </style>
 
@@ -356,6 +379,10 @@ footer .script { font: 400 26px/1 var(--f-script); color: var(--gold); display: 
   </div>
   <div class="lb-bottom" id="lb-bottom"></div>
 </div>
+
+<button class="fab" id="fab" type="button" hidden aria-label="Ajouter des photos">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+</button>
 
 <div class="toast" id="toast" hidden></div>
 
@@ -736,6 +763,7 @@ footer .script { font: 400 26px/1 var(--f-script); color: var(--gold); display: 
     const dest = document.querySelector('input[name="dest"]:checked').value;
     const prog = $("progress"); prog.classList.remove("err");
     const pick = $("pick"); pick.disabled = true;
+    const fab = $("fab"); fab.disabled = true; fab.classList.add("busy");
     let done = 0, failed = [];
     const list = [...files];
     for (const f of list) {
@@ -761,7 +789,7 @@ footer .script { font: 400 26px/1 var(--f-script); color: var(--gold); display: 
         failed.push({ name: f.name, why: e && (e.code || e.message) });
       }
     }
-    pick.disabled = false;
+    pick.disabled = false; fab.disabled = false; fab.classList.remove("busy");
     if (!failed.length) prog.textContent = `${done} souvenir${done > 1 ? "s" : ""} ajouté${done > 1 ? "s" : ""} ✓`;
     else {
       prog.classList.add("err");
@@ -777,6 +805,7 @@ footer .script { font: 400 26px/1 var(--f-script); color: var(--gold); display: 
   }
 
   $("pick").addEventListener("click", () => $("file").click());
+  $("fab").addEventListener("click", () => $("file").click());
   $("file").addEventListener("change", e => handleFiles(e.target.files));
   const up = $("upload");
   ["dragenter", "dragover"].forEach(t => up.addEventListener(t, e => { e.preventDefault(); up.classList.add("drag"); }));
@@ -795,6 +824,7 @@ footer .script { font: 400 26px/1 var(--f-script); color: var(--gold); display: 
     try { const w = u && await u.can("data.write"); if (w === false) mayWrite = false; } catch (e) {}
     canWrite = !!assets && mayWrite;
     $("upload").hidden = !canWrite;
+    $("fab").hidden = !canWrite;
     db.collection("photos").orderBy("takenAt").onSnapshot(snap => {
       photos = snap.docs.map(s => ({ id: s.id, ...s.data() }));
       ready = true; render();
