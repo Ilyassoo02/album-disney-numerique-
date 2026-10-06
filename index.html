@@ -149,6 +149,7 @@ main {
 .stats b { color: var(--snow); font-weight: 600; }
 
 /* Chapters */
+#album { display: grid; gap: 44px; }
 .chapter { display: grid; gap: 16px; }
 .chapter-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
 .chapter-head h2 { margin: 0; font: 700 clamp(22px, 4vw, 30px)/1.15 var(--f-display); letter-spacing: .02em; }
@@ -310,6 +311,26 @@ footer { padding-bottom: 110px !important; }
 .drop-card p { margin: 0; font: 700 22px/1.3 var(--f-display); }
 .drop-card span { color: var(--frost); font-size: 14px; }
 
+
+img.cast-img { object-fit: contain; }
+.empty-cast > * { width: 74px; height: 92px; }
+.empty-cast > :nth-child(2) { width: 96px; height: 120px; }
+.foot-cast > * { width: 48px; height: 60px; }
+.foot-cast > :nth-child(odd) { animation-delay: -1.6s; }
+.modal { position: fixed; inset: 0; z-index: 55; display: grid; place-items: center; padding: 16px; background: rgba(6, 9, 24, .9); }
+.panel { width: 100%; max-width: 640px; max-height: 88vh; overflow: auto; display: grid; gap: 14px; padding: 20px; border-radius: 20px; background: var(--night-2); border: 1px solid var(--line); }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.panel h2 { margin: 0; font: 700 20px/1.3 var(--f-display); }
+.panel p { margin: 0; color: var(--frost); font-size: 14px; }
+.cast-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+.cast-list li { display: grid; justify-items: center; gap: 6px; padding: 10px; border: 1px solid var(--line); border-radius: 14px; text-align: center; font-size: 12px; color: var(--frost); }
+.cast-list li.mine { border-color: rgba(233, 196, 111, .5); }
+.cast-list .pic { width: 70px; height: 84px; object-fit: contain; }
+.cast-list b { color: var(--snow); font-weight: 600; font-size: 13px; }
+.cast-list button { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 4px 10px; font-size: 12px; }
+.cast-list button.sure { background: var(--holly); border-color: var(--holly); color: var(--snow); }
+.panel-foot { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+
 @media (max-width: 520px) {
   .hero { min-height: 380px; }
   .hero-inner { padding: 36px 16px 170px; }
@@ -320,9 +341,9 @@ footer { padding-bottom: 110px !important; }
   .d-penguin, .d-ginger { display: none; }
   .d-snowman { left: 2%; }
   .d-reindeer { right: 2%; }
-  .empty-cast svg { width: 56px; height: 70px; }
-  .empty-cast svg:nth-child(2) { width: 74px; height: 92px; }
-  .foot-cast svg { width: 38px; height: 48px; }
+  .empty-cast > * { width: 56px; height: 70px; }
+  .empty-cast > :nth-child(2) { width: 74px; height: 92px; }
+  .foot-cast > * { width: 38px; height: 48px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .tile img, .tile video, .btn, .fab { transition: none; }
@@ -443,11 +464,7 @@ footer { padding-bottom: 110px !important; }
 
 <header class="hero" aria-label="Couverture de l'album">
   <canvas id="sky" aria-hidden="true"></canvas>
-  <svg class="deco fly d-fairy" aria-hidden="true"><use href="#ch-fairy"/></svg>
-  <svg class="deco bob d-snowman" aria-hidden="true"><use href="#ch-snowman"/></svg>
-  <svg class="deco bob d-reindeer" aria-hidden="true"><use href="#ch-reindeer"/></svg>
-  <svg class="deco bob d-penguin" aria-hidden="true"><use href="#ch-penguin"/></svg>
-  <svg class="deco bob d-ginger" aria-hidden="true"><use href="#ch-ginger"/></svg>
+  <div id="hero-cast" aria-hidden="true"></div>
   <div class="hero-inner">
     <span class="eyebrow">Notre album de Noël</span>
     <h1 class="names">Alycia <span class="amp">&amp;</span> Ilyas</h1>
@@ -461,6 +478,7 @@ footer { padding-bottom: 110px !important; }
     <div class="chips" id="chips" role="group" aria-label="Filtrer l'album"></div>
     <div class="tool-right">
       <div class="stats" id="stats"></div>
+      <button class="btn ghost" id="cast-open" type="button" hidden><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.6 6.3 6.8.5-5.2 4.4 1.6 6.6L12 16.3 6.2 19.8l1.6-6.6L2.6 8.8l6.8-.5z"/></svg><span>Personnages</span></button>
       <button class="btn" id="dl-all" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Tout télécharger</span></button>
     </div>
   </div>
@@ -469,14 +487,7 @@ footer { padding-bottom: 110px !important; }
 </main>
 
 <footer>
-  <div class="foot-cast" aria-hidden="true">
-    <svg class="bob"><use href="#ch-elf"/></svg>
-    <svg class="bob"><use href="#ch-snowman"/></svg>
-    <svg class="bob"><use href="#ch-fairy"/></svg>
-    <svg class="bob"><use href="#ch-reindeer"/></svg>
-    <svg class="bob"><use href="#ch-ginger"/></svg>
-    <svg class="bob"><use href="#ch-penguin"/></svg>
-  </div>
+  <div class="foot-cast" id="foot-cast" aria-hidden="true"></div>
   <span class="script">Il était une fois, à Noël…</span>
   Album privé d'Alycia et Ilyas
 </footer>
@@ -517,6 +528,21 @@ footer { padding-bottom: 110px !important; }
   <svg class="fab-elf" aria-hidden="true"><use href="#ch-elf"/></svg>
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
 </button>
+
+<div class="modal" id="castp" hidden role="dialog" aria-modal="true" aria-labelledby="castp-title">
+  <div class="panel">
+    <div class="panel-head">
+      <h2 id="castp-title">Vos personnages</h2>
+      <button class="icon-btn" id="castp-close" type="button" aria-label="Fermer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <p>Mettez vos propres images de personnages dans l'album : vos photos avec eux au parc, ou des images enregistrées sur votre ordinateur. Chaque image prend la place d'un dessin, dans l'ordre ci-dessous. Une image détourée, avec un fond transparent (PNG), rend le mieux.</p>
+    <ol class="cast-list" id="cast-list"></ol>
+    <div class="panel-foot">
+      <button class="btn" id="cast-add" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Ajouter un personnage</span></button>
+      <input type="file" id="cast-file" accept="image/png,image/webp,image/gif,image/jpeg,image/svg+xml" multiple hidden>
+    </div>
+  </div>
+</div>
 
 <div class="toast" id="toast" hidden></div>
 
@@ -643,9 +669,9 @@ footer { padding-bottom: 110px !important; }
 
   /* ---------------- Album ---------------- */
   const CHAPTERS = [
-    { key: "d1", title: "Jour 1", date: "jeudi 17 décembre", ico: "elf" },
-    { key: "d2", title: "Jour 2", date: "vendredi 18 décembre", ico: "ginger" },
-    { key: "extra", title: "Autour du voyage", date: "avant & après", ico: "penguin" }
+    { key: "d1", title: "Jour 1", date: "jeudi 17 décembre", ico: "elf", slot: 5 },
+    { key: "d2", title: "Jour 2", date: "vendredi 18 décembre", ico: "ginger", slot: 6 },
+    { key: "extra", title: "Autres photos du voyage", date: "pendant le voyage", ico: "penguin", slot: 7 }
   ];
   const chapterOf = k => CHAPTERS.find(c => c.key === k) || CHAPTERS[2];
 
@@ -678,14 +704,13 @@ footer { padding-bottom: 110px !important; }
 
   function renderChips() {
     const n = k => photos.filter(p => k === "fav" ? p.fav : p.day === k).length;
-    const items = [["all", "Tout", photos.length], ...CHAPTERS.map(c => [c.key, c.title, n(c.key)]), ["fav", "Coups de cœur", n("fav")]];
+    const items = [["all", "Tous les jours", photos.length], ...CHAPTERS.map(c => [c.key, c.title, n(c.key)]), ["fav", "Coups de cœur", n("fav")]];
     chipsEl.innerHTML = items
-      .filter(([k, , c]) => k === "all" || c > 0 || k === filter)
       .map(([k, label, c]) => `<button class="chip" type="button" data-f="${k}" aria-pressed="${filter === k}">${esc(label)}<span class="n">${c}</span></button>`)
       .join("");
     const vids = photos.filter(p => p.kind === "video").length;
     const favs = n("fav");
-    statsEl.innerHTML = `<span><b>${photos.length - vids}</b> photo${photos.length - vids > 1 ? "s" : ""}</span>` +
+    statsEl.innerHTML = !photos.length ? "" : `<span><b>${photos.length - vids}</b> photo${photos.length - vids > 1 ? "s" : ""}</span>` +
       (vids ? `<span><b>${vids}</b> vidéo${vids > 1 ? "s" : ""}</span>` : "") +
       (favs ? `<span><b>${favs}</b> coup${favs > 1 ? "s" : ""} de cœur</span>` : "");
   }
@@ -697,18 +722,19 @@ footer { padding-bottom: 110px !important; }
     else if (canWrite) hint = "Touchez le + doré en bas à droite, ou glissez vos photos depuis l\'ordinateur sur la page. Les photos prises le 17 vont dans le Jour 1, celles du 18 dans le Jour 2.";
     else hint = "Les photos apparaîtront ici dès qu'Alycia ou Ilyas en auront ajouté.";
     albumEl.innerHTML = `<div class="empty">
-      <div class="empty-cast" aria-hidden="true"><svg class="bob"><use href="#ch-reindeer"/></svg><svg class="bob"><use href="#ch-snowman"/></svg><svg class="fly"><use href="#ch-fairy"/></svg></div>
+      <div class="empty-cast" aria-hidden="true">${cast(1, "reindeer", "bob")}${cast(0, "snowman", "bob")}${cast(2, "fairy", "fly")}</div>
       <h2>L'album attend ses premières photos</h2>
-      <p>Deux chapitres sont prêts : le Jour 1 du jeudi 17 décembre et le Jour 2 du vendredi 18. Un troisième, « Autour du voyage », accueille le trajet, l'hôtel et tout ce qui vient avant ou après.</p>
+      <p>Deux chapitres sont prêts : le Jour 1 du jeudi 17 décembre et le Jour 2 du vendredi 18. Un troisième, « Autres photos du voyage », accueille le trajet, l'hôtel et tout le reste.</p>
       <p class="hint">${esc(hint)}</p>
     </div>`;
   }
 
   function render() {
-    $("toolbar").hidden = photos.length === 0;
-    $("dl-all").hidden = !downloads;
-    if (!photos.length) { view = []; renderEmpty(); return; }
+    $("toolbar").hidden = !ready;
+    $("dl-all").hidden = !downloads || !photos.length;
+    $("cast-open").hidden = !canWrite;
     renderChips();
+    if (!photos.length) { view = []; renderEmpty(); return; }
     const vis = photos.filter(p => filter === "all" ? true : filter === "fav" ? p.fav : p.day === filter);
     view = [];
     let html = "";
@@ -716,7 +742,7 @@ footer { padding-bottom: 110px !important; }
       const list = vis.filter(p => (CHAPTERS.some(x => x.key === p.day) ? p.day : "extra") === c.key);
       if (!list.length) continue;
       html += `<section class="chapter" aria-label="${esc(c.title)}">
-        <div class="chapter-head"><svg class="ch-ico bob" aria-hidden="true"><use href="#ch-${c.ico}"/></svg><h2>${esc(c.title)}</h2><span class="date">${esc(c.date)}</span>
+        <div class="chapter-head">${cast(c.slot, c.ico, "ch-ico bob")}<h2>${esc(c.title)}</h2><span class="date">${esc(c.date)}</span>
         <span class="count">${list.length} souvenir${list.length > 1 ? "s" : ""}</span>` +
         (downloads ? `<button class="ch-dl" type="button" data-dl="${c.key}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Télécharger ce jour</span></button>` : "") +
         `</div><div class="grid">`;
@@ -1041,6 +1067,79 @@ footer { padding-bottom: 110px !important; }
   document.addEventListener("dragleave", e => { if (!canWrite) return; dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) $("drop").hidden = true; });
   document.addEventListener("drop", e => { if (!canWrite) return; e.preventDefault(); dragDepth = 0; $("drop").hidden = true; handleFiles(e.dataTransfer.files); });
 
+  /* ---------------- Personnages ---------------- */
+  // Chaque place accueille une image ajoutée par Alycia ou Ilyas, sinon un dessin de Noël
+  const SLOTS = [
+    { name: "Sur la colline, à gauche", def: "snowman", cls: "deco bob d-snowman" },
+    { name: "Sur la colline, à droite", def: "reindeer", cls: "deco bob d-reindeer" },
+    { name: "Dans le ciel", def: "fairy", cls: "deco fly d-fairy" },
+    { name: "Près du château, à droite", def: "penguin", cls: "deco bob d-penguin" },
+    { name: "Près du château, à gauche", def: "ginger", cls: "deco bob d-ginger" },
+    { name: "Chapitre Jour 1", def: "elf" },
+    { name: "Chapitre Jour 2", def: "ginger" },
+    { name: "Chapitre Autres photos", def: "penguin" }
+  ];
+  let decos = [];
+  let castConfirm = null;
+  function cast(i, def, cls) {
+    const d = decos[i];
+    return d
+      ? `<img class="cast-img ${cls}" src="/_blob/${esc(d.asset)}" alt="" loading="lazy">`
+      : `<svg class="${cls}"><use href="#ch-${def}"/></svg>`;
+  }
+  function renderCast() {
+    $("hero-cast").innerHTML = SLOTS.slice(0, 5).map((s, i) => cast(i, s.def, s.cls)).join("");
+    const defaults = ["elf", "snowman", "fairy", "reindeer", "ginger", "penguin"];
+    const foot = decos.map(d => `<img class="cast-img bob" src="/_blob/${esc(d.asset)}" alt="" loading="lazy">`)
+      .concat(defaults.slice(0, Math.max(0, 6 - decos.length)).map(k => `<svg class="bob"><use href="#ch-${k}"/></svg>`));
+    $("foot-cast").innerHTML = foot.join("");
+  }
+  function renderCastPanel() {
+    const rows = SLOTS.map((s, i) => {
+      const d = decos[i];
+      return `<li class="${d ? "mine" : ""}">${cast(i, s.def, "pic")}<b>${esc(s.name)}</b>` +
+        (d ? `<button type="button" data-rm="${esc(d.id)}" class="${castConfirm === d.id ? "sure" : ""}">${castConfirm === d.id ? "Confirmer" : "Retirer"}</button>` : `<span>Dessin de Noël</span>`) + `</li>`;
+    });
+    decos.slice(SLOTS.length).forEach(d => rows.push(`<li class="mine">${cast(decos.indexOf(d), "", "pic")}<b>En bas de page</b><button type="button" data-rm="${esc(d.id)}" class="${castConfirm === d.id ? "sure" : ""}">${castConfirm === d.id ? "Confirmer" : "Retirer"}</button></li>`));
+    $("cast-list").innerHTML = rows.join("");
+  }
+  $("cast-open").addEventListener("click", () => { castConfirm = null; renderCastPanel(); $("castp").hidden = false; $("castp-close").focus(); });
+  $("castp-close").addEventListener("click", () => { $("castp").hidden = true; $("cast-open").focus(); });
+  $("castp").addEventListener("click", e => { if (e.target.id === "castp") $("castp").hidden = true; });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("castp").hidden) $("castp").hidden = true; });
+  $("cast-add").addEventListener("click", () => $("cast-file").click());
+  $("cast-file").addEventListener("change", async e => {
+    const files = [...e.target.files]; e.target.value = "";
+    if (!canWrite || !files.length) return;
+    const btn = $("cast-add"); btn.disabled = true;
+    let ok = 0;
+    for (const f of files) {
+      status(`Ajout du personnage ${ok + 1} sur ${files.length}…`, true);
+      try {
+        const okType = ["image/png", "image/webp", "image/gif", "image/jpeg", "image/svg+xml"].includes(f.type) && f.size <= (f.type === "image/svg+xml" ? 2 : 20) * 1024 * 1024;
+        const blob = okType ? f : await toJpeg(f);
+        const up = await assets.upload(blob, okType ? undefined : { type: "image/jpeg" });
+        await db.collection("decos").add({ asset: up.id, name: f.name || "", addedAt: Date.now() });
+        ok++;
+      } catch (err) {}
+    }
+    btn.disabled = false;
+    status(ok === files.length ? `${ok} personnage${ok > 1 ? "s" : ""} ajouté${ok > 1 ? "s" : ""} ✓` : `${ok} ajouté${ok > 1 ? "s" : ""}, ${files.length - ok} refusé${files.length - ok > 1 ? "s" : ""} : format d'image non reconnu.`, false, 5000);
+  });
+  $("cast-list").addEventListener("click", async e => {
+    const b = e.target.closest("button[data-rm]"); if (!b || !canWrite) return;
+    const id = b.dataset.rm;
+    if (castConfirm !== id) { castConfirm = id; renderCastPanel(); return; }
+    castConfirm = null;
+    const d = decos.find(x => x.id === id); if (!d) return;
+    try {
+      await db.collection("decos").doc(id).delete();
+      try { await assets.delete(d.asset); } catch (err) {}
+      toast("Personnage retiré");
+    } catch (err) { toast("Le personnage n'a pas pu être retiré. Réessayez."); }
+  });
+  renderCast();
+
   /* ---------------- Connexion au stockage ---------------- */
   renderEmpty();
   async function boot() {
@@ -1053,6 +1152,11 @@ footer { padding-bottom: 110px !important; }
     try { const w = u && await u.can("data.write"); if (w === false) mayWrite = false; } catch (e) {}
     canWrite = !!assets && mayWrite;
     $("fab").hidden = !canWrite;
+    db.collection("decos").orderBy("addedAt").onSnapshot(snap => {
+      decos = snap.docs.map(s => ({ id: s.id, ...s.data() })).filter(d => d.asset);
+      renderCast(); renderCastPanel();
+      if (ready) render(); else renderEmpty();
+    }, () => {});
     db.collection("photos").orderBy("takenAt").onSnapshot(snap => {
       photos = snap.docs.map(s => ({ id: s.id, ...s.data() }));
       ready = true; render();
