@@ -297,6 +297,19 @@ footer { padding-bottom: 110px !important; }
 .foot-cast svg:nth-child(odd) { animation-delay: -1.6s; }
 .fab-elf { position: absolute; width: 44px; height: 56px; left: -30px; top: -34px; transform: rotate(-14deg); pointer-events: none; }
 
+
+.tool-right { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.tool-right .btn { padding: 8px 16px; font-size: 14px; }
+.ch-dl { border: 1px solid var(--line); background: transparent; color: var(--frost); border-radius: 999px; padding: 6px 12px; font-size: 13px; display: inline-flex; gap: 6px; align-items: center; }
+.ch-dl:hover { color: var(--snow); border-color: var(--frost); }
+.ch-dl:disabled { opacity: .6; cursor: progress; }
+.ch-dl svg { width: 15px; height: 15px; }
+.drop { position: fixed; inset: 0; z-index: 70; display: grid; place-items: center; padding: 16px; background: rgba(6, 9, 24, .82); pointer-events: none; }
+.drop-card { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 32px 40px; border: 2px dashed var(--gold); border-radius: 24px; background: var(--night-2); }
+.drop-card svg { width: 80px; height: 104px; }
+.drop-card p { margin: 0; font: 700 22px/1.3 var(--f-display); }
+.drop-card span { color: var(--frost); font-size: 14px; }
+
 @media (max-width: 520px) {
   .hero { min-height: 380px; }
   .hero-inner { padding: 36px 16px 170px; }
@@ -446,7 +459,10 @@ footer { padding-bottom: 110px !important; }
 <main>
   <div class="toolbar" id="toolbar" hidden>
     <div class="chips" id="chips" role="group" aria-label="Filtrer l'album"></div>
-    <div class="stats" id="stats"></div>
+    <div class="tool-right">
+      <div class="stats" id="stats"></div>
+      <button class="btn" id="dl-all" type="button" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Tout télécharger</span></button>
+    </div>
   </div>
 
   <div id="album"></div>
@@ -489,6 +505,13 @@ footer { padding-bottom: 110px !important; }
   <div class="lb-bottom" id="lb-bottom"></div>
 </div>
 
+<div class="drop" id="drop" hidden aria-hidden="true">
+  <div class="drop-card">
+    <svg class="bob"><use href="#ch-snowman"/></svg>
+    <p>Déposez vos photos ici</p>
+    <span>Elles seront rangées dans le bon jour selon leur date.</span>
+  </div>
+</div>
 <input type="file" id="file" accept="image/*,video/mp4,video/webm" multiple hidden>
 <button class="fab" id="fab" type="button" hidden aria-label="Ajouter des photos">
   <svg class="fab-elf" aria-hidden="true"><use href="#ch-elf"/></svg>
@@ -497,6 +520,7 @@ footer { padding-bottom: 110px !important; }
 
 <div class="toast" id="toast" hidden></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 (() => {
   "use strict";
@@ -670,7 +694,7 @@ footer { padding-bottom: 110px !important; }
     let hint;
     if (!ready && !loadError) hint = "Chargement de l'album…";
     else if (loadError) hint = loadError;
-    else if (canWrite) hint = "Touchez le + doré en bas à droite. Les photos prises le 17 vont dans le Jour 1, celles du 18 dans le Jour 2.";
+    else if (canWrite) hint = "Touchez le + doré en bas à droite, ou glissez vos photos depuis l\'ordinateur sur la page. Les photos prises le 17 vont dans le Jour 1, celles du 18 dans le Jour 2.";
     else hint = "Les photos apparaîtront ici dès qu'Alycia ou Ilyas en auront ajouté.";
     albumEl.innerHTML = `<div class="empty">
       <div class="empty-cast" aria-hidden="true"><svg class="bob"><use href="#ch-reindeer"/></svg><svg class="bob"><use href="#ch-snowman"/></svg><svg class="fly"><use href="#ch-fairy"/></svg></div>
@@ -682,6 +706,7 @@ footer { padding-bottom: 110px !important; }
 
   function render() {
     $("toolbar").hidden = photos.length === 0;
+    $("dl-all").hidden = !downloads;
     if (!photos.length) { view = []; renderEmpty(); return; }
     renderChips();
     const vis = photos.filter(p => filter === "all" ? true : filter === "fav" ? p.fav : p.day === filter);
@@ -692,7 +717,9 @@ footer { padding-bottom: 110px !important; }
       if (!list.length) continue;
       html += `<section class="chapter" aria-label="${esc(c.title)}">
         <div class="chapter-head"><svg class="ch-ico bob" aria-hidden="true"><use href="#ch-${c.ico}"/></svg><h2>${esc(c.title)}</h2><span class="date">${esc(c.date)}</span>
-        <span class="count">${list.length} souvenir${list.length > 1 ? "s" : ""}</span></div><div class="grid">`;
+        <span class="count">${list.length} souvenir${list.length > 1 ? "s" : ""}</span>` +
+        (downloads ? `<button class="ch-dl" type="button" data-dl="${c.key}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><span>Télécharger ce jour</span></button>` : "") +
+        `</div><div class="grid">`;
       for (const p of list) {
         const i = view.push(p) - 1;
         const media = p.kind === "video"
@@ -826,19 +853,70 @@ footer { padding-bottom: 110px !important; }
       } catch (err) { toast("La suppression a échoué. Réessayez."); }
     }
   });
+  const EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif", "video/mp4": "mp4", "video/webm": "webm" };
+  function fileName(p, blob, i) {
+    const ext = EXT[blob.type] || (p.kind === "video" ? "mp4" : "jpg");
+    const base = (p.name || "").replace(/\.[^.]+$/, "").replace(/[\\/:*?"<>|]+/g, "_").trim() || `alycia-ilyas-${p.day}-${i + 1}`;
+    return `${base}.${ext}`;
+  }
+  const fetchBlob = async p => { const r = await fetch(src(p)); if (!r.ok) throw new Error("fetch"); return r.blob(); };
+
   $("lb-dl").addEventListener("click", async () => {
     const p = view[current]; if (!p || !downloads) return;
     try {
-      const blob = await (await fetch(src(p))).blob();
-      const ext = (p.name && p.name.includes(".")) ? "" : (blob.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
-      const base = p.name || `alycia-ilyas-${p.day}-${current + 1}`;
-      const r = await downloads.save({ filename: ext ? `${base}.${ext}` : base, data: blob });
+      const blob = await fetchBlob(p);
+      const r = await downloads.save({ filename: fileName(p, blob, current), data: blob });
       if (r && r.status === "saved") toast("Photo enregistrée");
     } catch (e) {
       if (e && e.code === "declined") return;
       toast("Le téléchargement n'a pas pu se faire.");
     }
   });
+
+  // Télécharger plusieurs souvenirs d'un coup, dans un .zip rangé par jour
+  let zipping = false;
+  async function downloadZip(list, zipName, btn) {
+    if (zipping || !downloads || !list.length) return;
+    if (!window.JSZip) { toast("Le téléchargement groupé n'a pas pu se charger. Rechargez la page."); return; }
+    zipping = true; if (btn) btn.disabled = true;
+    const zip = new JSZip();
+    const used = new Set();
+    let missing = 0;
+    try {
+      for (let i = 0; i < list.length; i++) {
+        const p = list[i];
+        status(`Préparation ${i + 1} sur ${list.length}…`, true);
+        let blob;
+        try { blob = await fetchBlob(p); } catch (e) { missing++; continue; }
+        const c = chapterOf(p.day);
+        const folder = `${c.title} - ${c.date}`.replace(/&/g, "et");
+        let name = fileName(p, blob, i), k = 2;
+        while (used.has(folder + "/" + name)) name = name.replace(/(\.\w+)$/, ` (${k++})$1`);
+        used.add(folder + "/" + name);
+        zip.file(`${folder}/${name}`, blob, { date: new Date(p.takenAt || Date.now()), binary: true });
+      }
+      if (!used.size) { status("Aucun fichier n'a pu être récupéré.", false, 5000); return; }
+      const out = await zip.generateAsync({ type: "blob", compression: "STORE" }, m => status(`Création du fichier… ${Math.round(m.percent)} %`, true));
+      status("Choisissez où enregistrer le fichier.", true);
+      const r = await downloads.save({ filename: zipName, data: out });
+      if (r && r.status === "saved") status(`${used.size} souvenir${used.size > 1 ? "s" : ""} téléchargé${used.size > 1 ? "s" : ""}` + (missing ? `, ${missing} introuvable${missing > 1 ? "s" : ""}` : "") + " ✓", false, 5000);
+      else $("toast").hidden = true;
+    } catch (e) {
+      if (e && e.code === "declined") { $("toast").hidden = true; return; }
+      status(e && e.code === "too_large" ? "Le fichier est trop lourd pour ce téléphone. Téléchargez jour par jour, ou depuis un ordinateur." : "Le téléchargement n'a pas pu se faire. Réessayez.", false, 7000);
+    } finally {
+      zipping = false; if (btn) btn.disabled = false;
+    }
+  }
+  $("dl-all").addEventListener("click", e => downloadZip(photos.slice(), "Alycia-Ilyas-Noel-Disneyland-2026.zip", e.currentTarget));
+  albumEl.addEventListener("click", e => {
+    const b = e.target.closest(".ch-dl"); if (!b) return;
+    e.stopPropagation();
+    const c = chapterOf(b.dataset.dl);
+    const list = photos.filter(p => (CHAPTERS.some(x => x.key === p.day) ? p.day : "extra") === c.key);
+    downloadZip(list, `Alycia-Ilyas-${c.title.replace(/\s+/g, "-")}.zip`, b);
+  });
+
 
   /* ---------------- Ajout de photos ---------------- */
   const OK_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "video/mp4", "video/webm"];
@@ -875,6 +953,42 @@ footer { padding-bottom: 110px !important; }
     throw new Error("too_large");
   }
 
+  // Date de prise de vue lue dans la photo (EXIF), plus fiable que la date du fichier après une copie sur PC
+  async function shotDate(file) {
+    try {
+      if (file.type !== "image/jpeg") return null;
+      const v = new DataView(await file.slice(0, 256 * 1024).arrayBuffer());
+      if (v.getUint16(0) !== 0xFFD8) return null;
+      let o = 2;
+      while (o + 4 < v.byteLength) {
+        const marker = v.getUint16(o), len = v.getUint16(o + 2);
+        if (marker === 0xFFE1 && v.getUint32(o + 4) === 0x45786966) {
+          const tiff = o + 10, le = v.getUint16(tiff) === 0x4949;
+          const u16 = x => v.getUint16(x, le), u32 = x => v.getUint32(x, le);
+          const readIfd = (ifd, want) => {
+            const n = u16(ifd);
+            for (let i = 0; i < n; i++) {
+              const e = ifd + 2 + i * 12;
+              if (u16(e) === want) return e;
+            }
+            return null;
+          };
+          const ascii = e => { const off = tiff + u32(e + 8); let s = ""; for (let i = 0; i < 19; i++) s += String.fromCharCode(v.getUint8(off + i)); return s; };
+          const ifd0 = tiff + u32(tiff + 4);
+          let str = null;
+          const exifPtr = readIfd(ifd0, 0x8769);
+          if (exifPtr) { const e = readIfd(tiff + u32(exifPtr + 8), 0x9003); if (e) str = ascii(e); }
+          if (!str) { const e = readIfd(ifd0, 0x0132); if (e) str = ascii(e); }
+          const m = str && str.match(/^(\d{4}):(\d{2}):(\d{2}) (\d{2}):(\d{2}):(\d{2})/);
+          return m ? new Date(+m[1], m[2] - 1, +m[3], +m[4], +m[5], +m[6]).getTime() : null;
+        }
+        if ((marker & 0xFF00) !== 0xFF00) return null;
+        o += 2 + len;
+      }
+    } catch (e) {}
+    return null;
+  }
+
   async function handleFiles(files) {
     if (!canWrite || !files.length) return;
     const fab = $("fab"); fab.disabled = true; fab.classList.add("busy");
@@ -892,11 +1006,12 @@ footer { padding-bottom: 110px !important; }
           blob = await toJpeg(f);
         }
         const up = await assets.upload(blob, OK_TYPES.includes(blob.type) ? undefined : { type: "image/jpeg" });
-        const day = dayFromDate(f.lastModified) || "extra";
+        const taken = (await shotDate(f)) || f.lastModified || Date.now();
+        const day = dayFromDate(taken) || "extra";
         await db.collection("photos").add({
           asset: up.id, kind: isVideo ? "video" : "image", day,
           caption: "", fav: false, name: f.name || "",
-          takenAt: f.lastModified || Date.now(), addedAt: Date.now()
+          takenAt: taken, addedAt: Date.now()
         });
         done++;
       } catch (e) {
@@ -919,8 +1034,12 @@ footer { padding-bottom: 110px !important; }
 
   $("fab").addEventListener("click", () => $("file").click());
   $("file").addEventListener("change", e => handleFiles(e.target.files));
-  ["dragenter", "dragover"].forEach(t => document.addEventListener(t, e => { if (canWrite) e.preventDefault(); }));
-  document.addEventListener("drop", e => { if (!canWrite) return; e.preventDefault(); handleFiles(e.dataTransfer.files); });
+  let dragDepth = 0;
+  const hasFiles = e => e.dataTransfer && [...e.dataTransfer.types].includes("Files");
+  document.addEventListener("dragenter", e => { if (!canWrite || !hasFiles(e)) return; e.preventDefault(); dragDepth++; $("drop").hidden = false; });
+  document.addEventListener("dragover", e => { if (canWrite && hasFiles(e)) e.preventDefault(); });
+  document.addEventListener("dragleave", e => { if (!canWrite) return; dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) $("drop").hidden = true; });
+  document.addEventListener("drop", e => { if (!canWrite) return; e.preventDefault(); dragDepth = 0; $("drop").hidden = true; handleFiles(e.dataTransfer.files); });
 
   /* ---------------- Connexion au stockage ---------------- */
   renderEmpty();
