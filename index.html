@@ -143,31 +143,6 @@ main {
 .btn.danger { background: var(--holly); color: var(--snow); box-shadow: none; }
 .btn svg { width: 18px; height: 18px; }
 
-/* Upload panel */
-.upload {
-  display: grid;
-  gap: 14px;
-  padding: 18px;
-  border: 1px dashed rgba(233, 196, 111, .45);
-  border-radius: 18px;
-  background: rgba(20, 30, 71, .55);
-}
-.upload.drag { background: var(--gold-soft); border-style: solid; }
-.upload-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
-.upload h2 { margin: 0; font: 700 17px/1.3 var(--f-display); letter-spacing: .03em; }
-.upload p { margin: 0; color: var(--frost); font-size: 14px; max-width: 62ch; }
-.seg { display: flex; flex-wrap: wrap; gap: 6px; }
-.seg label {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line);
-  font-size: 14px; color: var(--frost); cursor: pointer;
-}
-.seg input { position: absolute; opacity: 0; pointer-events: none; }
-.seg input:checked + span { color: var(--night); }
-.seg label:has(input:checked) { background: var(--gold); border-color: var(--gold); color: var(--night); font-weight: 600; }
-.seg label:has(input:focus-visible) { outline: 2px solid var(--gold); outline-offset: 2px; }
-.progress { font-size: 14px; color: var(--gold); font-variant-numeric: tabular-nums; min-height: 1.4em; }
-.progress.err { color: var(--holly); }
 
 /* Stats */
 .stats { display: flex; flex-wrap: wrap; gap: 6px 20px; color: var(--frost); font-size: 14px; font-variant-numeric: tabular-nums; }
@@ -291,10 +266,36 @@ footer .script { font: 400 26px/1 var(--f-script); color: var(--gold); display: 
 }
 .fab:hover { transform: scale(1.06); }
 .fab:disabled { opacity: .6; cursor: progress; }
-.fab svg { width: 30px; height: 30px; }
-.fab.busy svg { animation: spin 1.2s linear infinite; }
+.fab svg:not(.fab-elf) { width: 30px; height: 30px; }
+.fab.busy svg:not(.fab-elf) { animation: spin 1.2s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 footer { padding-bottom: 110px !important; }
+
+
+/* Personnages */
+.deco { position: absolute; pointer-events: none; z-index: 1; overflow: visible; }
+.d-fairy { top: 26px; left: 7%; width: clamp(54px, 8vw, 92px); height: clamp(65px, 9.6vw, 110px); }
+.d-snowman { left: 5%; bottom: 14px; width: clamp(70px, 10vw, 120px); height: clamp(91px, 13vw, 156px); }
+.d-reindeer { right: 5%; bottom: 16px; width: clamp(70px, 10vw, 118px); height: clamp(88px, 12.5vw, 148px); }
+.d-penguin { right: 19%; bottom: 10px; width: clamp(48px, 6vw, 72px); height: clamp(58px, 7.2vw, 86px); }
+.d-ginger { left: 19%; bottom: 12px; width: clamp(46px, 5.6vw, 68px); height: clamp(55px, 6.7vw, 82px); }
+.bob { animation: bob 3.2s ease-in-out infinite; transform-origin: 50% 100%; }
+.d-reindeer.bob { animation-delay: -1.1s; }
+.d-penguin.bob { animation: waddle 1.8s ease-in-out infinite; }
+.d-ginger.bob { animation-delay: -2s; }
+.fly { animation: fly 6s ease-in-out infinite; }
+@keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+@keyframes waddle { 0%, 100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+@keyframes fly { 0%, 100% { transform: translate(0, 0) rotate(-4deg); } 50% { transform: translate(14px, -10px) rotate(4deg); } }
+.ch-ico { width: 46px; height: 56px; flex: none; align-self: flex-end; }
+.empty-cast { display: flex; align-items: flex-end; justify-content: center; gap: 6px; }
+.empty-cast svg { width: 74px; height: 92px; }
+.empty-cast svg:nth-child(2) { width: 96px; height: 120px; }
+.empty-cast svg:nth-child(2n) { animation-delay: -1.4s; }
+.foot-cast { display: flex; justify-content: center; align-items: flex-end; flex-wrap: wrap; gap: 4px 14px; margin-bottom: 14px; }
+.foot-cast svg { width: 48px; height: 60px; }
+.foot-cast svg:nth-child(odd) { animation-delay: -1.6s; }
+.fab-elf { position: absolute; width: 44px; height: 56px; left: -30px; top: -34px; transform: rotate(-14deg); pointer-events: none; }
 
 @media (max-width: 520px) {
   .hero { min-height: 380px; }
@@ -302,15 +303,138 @@ footer { padding-bottom: 110px !important; }
   .grid { columns: 2 140px; column-gap: 8px; }
   .tile { margin-bottom: 8px; border-radius: 10px; }
   .lb-nav { width: 40px; height: 40px; }
+  .d-fairy { top: 8px; left: 2%; }
+  .d-penguin, .d-ginger { display: none; }
+  .d-snowman { left: 2%; }
+  .d-reindeer { right: 2%; }
+  .empty-cast svg { width: 56px; height: 70px; }
+  .empty-cast svg:nth-child(2) { width: 74px; height: 92px; }
+  .foot-cast svg { width: 38px; height: 48px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .tile img, .tile video, .btn, .fab { transition: none; }
   .fab.busy svg { animation: none; }
+  .bob, .fly, .d-penguin.bob { animation: none; }
 }
 </style>
 
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="ch-snowman" viewBox="0 0 100 130">
+      <g stroke="#6b4a2b" stroke-width="3.5" stroke-linecap="round" fill="none"><path d="M28 92 L8 74 M13 79 L5 80 M13 79 L12 71"/><path d="M72 92 L92 74 M87 79 L95 80 M87 79 L88 71"/></g>
+      <circle cx="50" cy="104" r="26" fill="#fbf8f1"/>
+      <circle cx="50" cy="104" r="26" fill="none" stroke="#c9d3ee" stroke-width="2"/>
+      <circle cx="50" cy="96" r="3" fill="#d9534a"/><circle cx="50" cy="107" r="3" fill="#d9534a"/><circle cx="50" cy="118" r="3" fill="#d9534a"/>
+      <circle cx="50" cy="58" r="19" fill="#fbf8f1"/>
+      <circle cx="50" cy="58" r="19" fill="none" stroke="#c9d3ee" stroke-width="2"/>
+      <path d="M31 74 Q50 82 69 74 L69 81 Q50 89 31 81 Z" fill="#d9534a"/>
+      <path d="M58 79 L66 100 L58 101 L52 82 Z" fill="#b83f37"/>
+      <rect x="35" y="16" width="30" height="24" rx="3" fill="#1a2140"/>
+      <rect x="35" y="31" width="30" height="5" fill="#e9c46f"/>
+      <rect x="27" y="38" width="46" height="6" rx="3" fill="#1a2140"/>
+      <circle cx="43" cy="54" r="2.6" fill="#1a2140"/><circle cx="57" cy="54" r="2.6" fill="#1a2140"/>
+      <circle cx="44" cy="53" r=".9" fill="#fff"/><circle cx="58" cy="53" r=".9" fill="#fff"/>
+      <path d="M50 59 L67 62 L50 63 Z" fill="#f08a2c"/>
+      <path d="M43 67 Q50 72 57 67" stroke="#1a2140" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="39" cy="62" r="3.2" fill="#f4a3a3" opacity=".7"/><circle cx="61" cy="62" r="3.2" fill="#f4a3a3" opacity=".7"/>
+    </symbol>
+    <symbol id="ch-reindeer" viewBox="0 0 100 125">
+      <g stroke="#8a5a32" stroke-width="4" stroke-linecap="round" fill="none"><path d="M39 32 L28 10 M31 17 L20 15 M34 22 L38 9"/><path d="M61 32 L72 10 M69 17 L80 15 M66 22 L62 9"/></g>
+      <ellipse cx="29" cy="40" rx="10" ry="5" transform="rotate(-25 29 40)" fill="#a8693b"/>
+      <ellipse cx="71" cy="40" rx="10" ry="5" transform="rotate(25 71 40)" fill="#a8693b"/>
+      <ellipse cx="50" cy="102" rx="25" ry="21" fill="#b87a45"/>
+      <ellipse cx="50" cy="106" rx="14" ry="14" fill="#ecd2ab"/>
+      <ellipse cx="38" cy="120" rx="7" ry="4" fill="#5b3a20"/><ellipse cx="62" cy="120" rx="7" ry="4" fill="#5b3a20"/>
+      <ellipse cx="50" cy="52" rx="21" ry="23" fill="#b87a45"/>
+      <rect x="31" y="74" width="38" height="9" rx="4.5" fill="#2f8f5b"/>
+      <path d="M60 79 L66 96 L59 97 L54 81 Z" fill="#256f47"/>
+      <ellipse cx="50" cy="65" rx="14" ry="10" fill="#ecd2ab"/>
+      <circle cx="42" cy="48" r="3.4" fill="#1a1a1a"/><circle cx="58" cy="48" r="3.4" fill="#1a1a1a"/>
+      <circle cx="43.2" cy="46.8" r="1.1" fill="#fff"/><circle cx="59.2" cy="46.8" r="1.1" fill="#fff"/>
+      <circle cx="50" cy="60" r="6.5" fill="#e53b3b"/><circle cx="48" cy="58" r="1.8" fill="#ff9c9c"/>
+      <path d="M45 69 Q50 73 55 69" stroke="#5b3a20" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ch-ginger" viewBox="0 0 100 120">
+      <g fill="#c47a3c">
+        <rect x="12" y="52" width="76" height="17" rx="8.5"/>
+        <rect x="30" y="80" width="17" height="34" rx="8.5" transform="rotate(10 38 97)"/>
+        <rect x="53" y="80" width="17" height="34" rx="8.5" transform="rotate(-10 62 97)"/>
+        <rect x="31" y="44" width="38" height="48" rx="16"/>
+        <circle cx="50" cy="28" r="20"/>
+      </g>
+      <g stroke="#fbf8f1" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M16 56 l3 4 l3 -4 l3 4"/><path d="M75 56 l3 4 l3 -4 l3 4"/>
+        <path d="M31 106 l3 4 l3 -4 l3 4"/><path d="M58 106 l3 4 l3 -4 l3 4"/>
+        <path d="M42 35 Q50 42 58 35"/>
+      </g>
+      <circle cx="43" cy="25" r="3" fill="#3a2414"/><circle cx="57" cy="25" r="3" fill="#3a2414"/>
+      <circle cx="38" cy="32" r="3" fill="#f08a8a" opacity=".7"/><circle cx="62" cy="32" r="3" fill="#f08a8a" opacity=".7"/>
+      <circle cx="50" cy="57" r="3.6" fill="#d9534a"/><circle cx="50" cy="69" r="3.6" fill="#2f8f5b"/><circle cx="50" cy="81" r="3.6" fill="#d9534a"/>
+      <path d="M40 46 L50 52 L60 46 L60 52 L50 48 L40 52 Z" fill="#d9534a"/>
+    </symbol>
+    <symbol id="ch-fairy" viewBox="0 0 100 120">
+      <ellipse cx="33" cy="58" rx="16" ry="24" transform="rotate(-25 33 58)" fill="#cfe3ff" opacity=".75"/>
+      <ellipse cx="67" cy="58" rx="16" ry="24" transform="rotate(25 67 58)" fill="#cfe3ff" opacity=".75"/>
+      <ellipse cx="33" cy="58" rx="9" ry="15" transform="rotate(-25 33 58)" fill="#ffffff" opacity=".55"/>
+      <ellipse cx="67" cy="58" rx="9" ry="15" transform="rotate(25 67 58)" fill="#ffffff" opacity=".55"/>
+      <path d="M50 48 L73 98 Q50 106 27 98 Z" fill="#8fb7ff"/>
+      <path d="M50 48 L60 98 Q50 101 40 98 Z" fill="#b5ceff"/>
+      <circle cx="40" cy="88" r="1.6" fill="#fff"/><circle cx="58" cy="80" r="1.6" fill="#fff"/><circle cx="52" cy="93" r="1.6" fill="#fff"/>
+      <path d="M62 58 L80 42" stroke="#f6d2b5" stroke-width="4.5" stroke-linecap="round"/>
+      <path d="M80 42 L87 28" stroke="#e9c46f" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M88 15 L90.5 21.5 L97 22 L92 26.5 L93.5 33 L88 29.5 L82.5 33 L84 26.5 L79 22 L85.5 21.5 Z" fill="#e9c46f"/>
+      <path d="M44 100 L44 112 M56 100 L56 112" stroke="#f6d2b5" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="50" cy="20" r="7" fill="#e9c46f"/>
+      <circle cx="50" cy="35" r="14" fill="#f6d2b5"/>
+      <path d="M36 36 Q35 19 50 20 Q65 19 64 36 Q59 27 50 27 Q41 27 36 36 Z" fill="#e9c46f"/>
+      <path d="M42 22 L45 15 L50 20 L55 15 L58 22 Z" fill="#fbf8f1"/>
+      <circle cx="45" cy="37" r="2" fill="#1a2140"/><circle cx="55" cy="37" r="2" fill="#1a2140"/>
+      <path d="M46 42 Q50 45 54 42" stroke="#c0645a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      <circle cx="41" cy="41" r="2.4" fill="#f4a3a3" opacity=".7"/><circle cx="59" cy="41" r="2.4" fill="#f4a3a3" opacity=".7"/>
+    </symbol>
+    <symbol id="ch-penguin" viewBox="0 0 100 120">
+      <ellipse cx="22" cy="74" rx="7" ry="18" transform="rotate(25 22 74)" fill="#1f2638"/>
+      <ellipse cx="78" cy="74" rx="7" ry="18" transform="rotate(-25 78 74)" fill="#1f2638"/>
+      <ellipse cx="40" cy="111" rx="9" ry="4.5" fill="#f08a2c"/><ellipse cx="60" cy="111" rx="9" ry="4.5" fill="#f08a2c"/>
+      <ellipse cx="50" cy="72" rx="29" ry="38" fill="#1f2638"/>
+      <ellipse cx="50" cy="80" rx="19" ry="27" fill="#fbf8f1"/>
+      <ellipse cx="50" cy="54" rx="18" ry="13" fill="#fbf8f1"/>
+      <circle cx="43" cy="52" r="3" fill="#1a1a1a"/><circle cx="57" cy="52" r="3" fill="#1a1a1a"/>
+      <circle cx="44" cy="51" r="1" fill="#fff"/><circle cx="58" cy="51" r="1" fill="#fff"/>
+      <path d="M45 58 L55 58 L50 65 Z" fill="#f08a2c"/>
+      <circle cx="39" cy="60" r="3" fill="#f4a3a3" opacity=".7"/><circle cx="61" cy="60" r="3" fill="#f4a3a3" opacity=".7"/>
+      <path d="M27 42 Q48 2 74 40 Z" fill="#d9534a"/>
+      <rect x="24" y="37" width="52" height="9" rx="4.5" fill="#fbf8f1"/>
+      <circle cx="54" cy="11" r="6.5" fill="#fbf8f1"/>
+      <rect x="30" y="68" width="40" height="7" rx="3.5" fill="#2f8f5b"/>
+    </symbol>
+    <symbol id="ch-elf" viewBox="0 0 100 130">
+      <path d="M30 124 L36 80 L64 80 L70 124 Z" fill="#2f8f5b"/>
+      <rect x="33" y="100" width="34" height="7" fill="#1a2140"/>
+      <rect x="45" y="99" width="10" height="9" rx="1.5" fill="none" stroke="#e9c46f" stroke-width="2.4"/>
+      <path d="M31 80 L37 89 L43 80 L50 89 L57 80 L63 89 L69 80 Z" fill="#d9534a"/>
+      <path d="M32 56 L16 46 L34 66 Z" fill="#f6d2b5"/>
+      <path d="M68 56 L84 46 L66 66 Z" fill="#f6d2b5"/>
+      <circle cx="50" cy="60" r="19" fill="#f6d2b5"/>
+      <path d="M33 52 Q36 42 44 46 Q50 40 56 46 Q64 42 67 52 Z" fill="#a0612f"/>
+      <path d="M30 50 Q46 20 84 12 Q66 32 70 50 Z" fill="#2f8f5b"/>
+      <rect x="29" y="45" width="42" height="9" rx="4.5" fill="#d9534a"/>
+      <circle cx="85" cy="13" r="5.5" fill="#e9c46f"/>
+      <circle cx="43" cy="62" r="2.6" fill="#1a2140"/><circle cx="57" cy="62" r="2.6" fill="#1a2140"/>
+      <circle cx="44" cy="61" r=".9" fill="#fff"/><circle cx="58" cy="61" r=".9" fill="#fff"/>
+      <path d="M43 70 Q50 76 57 70" stroke="#c0645a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <circle cx="38" cy="68" r="3" fill="#f4a3a3" opacity=".75"/><circle cx="62" cy="68" r="3" fill="#f4a3a3" opacity=".75"/>
+    </symbol>
+  </defs>
+</svg>
+
 <header class="hero" aria-label="Couverture de l'album">
   <canvas id="sky" aria-hidden="true"></canvas>
+  <svg class="deco fly d-fairy" aria-hidden="true"><use href="#ch-fairy"/></svg>
+  <svg class="deco bob d-snowman" aria-hidden="true"><use href="#ch-snowman"/></svg>
+  <svg class="deco bob d-reindeer" aria-hidden="true"><use href="#ch-reindeer"/></svg>
+  <svg class="deco bob d-penguin" aria-hidden="true"><use href="#ch-penguin"/></svg>
+  <svg class="deco bob d-ginger" aria-hidden="true"><use href="#ch-ginger"/></svg>
   <div class="hero-inner">
     <span class="eyebrow">Notre album de Noël</span>
     <h1 class="names">Alycia <span class="amp">&amp;</span> Ilyas</h1>
@@ -320,29 +444,6 @@ footer { padding-bottom: 110px !important; }
 </header>
 
 <main>
-  <section class="upload" id="upload" hidden aria-labelledby="upload-title">
-    <div class="upload-row">
-      <div>
-        <h2 id="upload-title">Ajouter des souvenirs</h2>
-        <p>Photos et vidéos depuis le téléphone ou l'ordinateur. Les originaux sont gardés en pleine qualité, pratique pour le livre photo.</p>
-      </div>
-      <button class="btn" id="pick" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        Ajouter des photos
-      </button>
-      <input type="file" id="file" accept="image/*,video/mp4,video/webm" multiple hidden>
-    </div>
-    <div class="upload-row">
-      <div class="seg" role="radiogroup" aria-label="Ranger dans">
-        <label><input type="radio" name="dest" id="dest-auto" value="auto" checked><span>Ranger selon la date</span></label>
-        <label><input type="radio" name="dest" id="dest-d1" value="d1"><span>Jour 1</span></label>
-        <label><input type="radio" name="dest" id="dest-d2" value="d2"><span>Jour 2</span></label>
-        <label><input type="radio" name="dest" id="dest-extra" value="extra"><span>Autour du voyage</span></label>
-      </div>
-      <div class="progress" id="progress" aria-live="polite"></div>
-    </div>
-  </section>
-
   <div class="toolbar" id="toolbar" hidden>
     <div class="chips" id="chips" role="group" aria-label="Filtrer l'album"></div>
     <div class="stats" id="stats"></div>
@@ -352,6 +453,14 @@ footer { padding-bottom: 110px !important; }
 </main>
 
 <footer>
+  <div class="foot-cast" aria-hidden="true">
+    <svg class="bob"><use href="#ch-elf"/></svg>
+    <svg class="bob"><use href="#ch-snowman"/></svg>
+    <svg class="bob"><use href="#ch-fairy"/></svg>
+    <svg class="bob"><use href="#ch-reindeer"/></svg>
+    <svg class="bob"><use href="#ch-ginger"/></svg>
+    <svg class="bob"><use href="#ch-penguin"/></svg>
+  </div>
   <span class="script">Il était une fois, à Noël…</span>
   Album privé d'Alycia et Ilyas
 </footer>
@@ -380,7 +489,9 @@ footer { padding-bottom: 110px !important; }
   <div class="lb-bottom" id="lb-bottom"></div>
 </div>
 
+<input type="file" id="file" accept="image/*,video/mp4,video/webm" multiple hidden>
 <button class="fab" id="fab" type="button" hidden aria-label="Ajouter des photos">
+  <svg class="fab-elf" aria-hidden="true"><use href="#ch-elf"/></svg>
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
 </button>
 
@@ -508,9 +619,9 @@ footer { padding-bottom: 110px !important; }
 
   /* ---------------- Album ---------------- */
   const CHAPTERS = [
-    { key: "d1", title: "Jour 1", date: "jeudi 17 décembre" },
-    { key: "d2", title: "Jour 2", date: "vendredi 18 décembre" },
-    { key: "extra", title: "Autour du voyage", date: "avant & après" }
+    { key: "d1", title: "Jour 1", date: "jeudi 17 décembre", ico: "elf" },
+    { key: "d2", title: "Jour 2", date: "vendredi 18 décembre", ico: "ginger" },
+    { key: "extra", title: "Autour du voyage", date: "avant & après", ico: "penguin" }
   ];
   const chapterOf = k => CHAPTERS.find(c => c.key === k) || CHAPTERS[2];
 
@@ -530,6 +641,12 @@ footer { padding-bottom: 110px !important; }
   function toast(msg) {
     const t = $("toast"); t.textContent = msg; t.hidden = false;
     clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, 2600);
+  }
+
+  function status(msg, sticky, ms) {
+    const t = $("toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toast._t);
+    if (!sticky) toast._t = setTimeout(() => { t.hidden = true; }, ms || 3000);
   }
 
   const heart = '<svg viewBox="0 0 24 24" fill="#d9534a" stroke="#d9534a" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.4 3.1 5 6.4 5c2 0 3.6 1.2 4.4 2.6h2.4C14 6.2 15.6 5 17.6 5c3.3 0 5.1 3.4 3.6 6.4C19 15.6 12 20 12 20z"/></svg>';
@@ -553,10 +670,10 @@ footer { padding-bottom: 110px !important; }
     let hint;
     if (!ready && !loadError) hint = "Chargement de l'album…";
     else if (loadError) hint = loadError;
-    else if (canWrite) hint = "Touchez « Ajouter des photos » juste au-dessus. Les photos prises le 17 vont dans le Jour 1, celles du 18 dans le Jour 2.";
+    else if (canWrite) hint = "Touchez le + doré en bas à droite. Les photos prises le 17 vont dans le Jour 1, celles du 18 dans le Jour 2.";
     else hint = "Les photos apparaîtront ici dès qu'Alycia ou Ilyas en auront ajouté.";
     albumEl.innerHTML = `<div class="empty">
-      <div class="orn" aria-hidden="true">✦</div>
+      <div class="empty-cast" aria-hidden="true"><svg class="bob"><use href="#ch-reindeer"/></svg><svg class="bob"><use href="#ch-snowman"/></svg><svg class="fly"><use href="#ch-fairy"/></svg></div>
       <h2>L'album attend ses premières photos</h2>
       <p>Deux chapitres sont prêts : le Jour 1 du jeudi 17 décembre et le Jour 2 du vendredi 18. Un troisième, « Autour du voyage », accueille le trajet, l'hôtel et tout ce qui vient avant ou après.</p>
       <p class="hint">${esc(hint)}</p>
@@ -574,7 +691,7 @@ footer { padding-bottom: 110px !important; }
       const list = vis.filter(p => (CHAPTERS.some(x => x.key === p.day) ? p.day : "extra") === c.key);
       if (!list.length) continue;
       html += `<section class="chapter" aria-label="${esc(c.title)}">
-        <div class="chapter-head"><h2>${esc(c.title)}</h2><span class="date">${esc(c.date)}</span>
+        <div class="chapter-head"><svg class="ch-ico bob" aria-hidden="true"><use href="#ch-${c.ico}"/></svg><h2>${esc(c.title)}</h2><span class="date">${esc(c.date)}</span>
         <span class="count">${list.length} souvenir${list.length > 1 ? "s" : ""}</span></div><div class="grid">`;
       for (const p of list) {
         const i = view.push(p) - 1;
@@ -760,14 +877,11 @@ footer { padding-bottom: 110px !important; }
 
   async function handleFiles(files) {
     if (!canWrite || !files.length) return;
-    const dest = document.querySelector('input[name="dest"]:checked').value;
-    const prog = $("progress"); prog.classList.remove("err");
-    const pick = $("pick"); pick.disabled = true;
     const fab = $("fab"); fab.disabled = true; fab.classList.add("busy");
     let done = 0, failed = [];
     const list = [...files];
     for (const f of list) {
-      prog.textContent = `Envoi ${done + failed.length + 1} sur ${list.length}…`;
+      status(`Envoi ${done + failed.length + 1} sur ${list.length}…`, true);
       try {
         const isVideo = f.type.startsWith("video/");
         let blob = f;
@@ -778,7 +892,7 @@ footer { padding-bottom: 110px !important; }
           blob = await toJpeg(f);
         }
         const up = await assets.upload(blob, OK_TYPES.includes(blob.type) ? undefined : { type: "image/jpeg" });
-        const day = dest === "auto" ? (dayFromDate(f.lastModified) || "extra") : dest;
+        const day = dayFromDate(f.lastModified) || "extra";
         await db.collection("photos").add({
           asset: up.id, kind: isVideo ? "video" : "image", day,
           caption: "", fav: false, name: f.name || "",
@@ -789,28 +903,24 @@ footer { padding-bottom: 110px !important; }
         failed.push({ name: f.name, why: e && (e.code || e.message) });
       }
     }
-    pick.disabled = false; fab.disabled = false; fab.classList.remove("busy");
-    if (!failed.length) prog.textContent = `${done} souvenir${done > 1 ? "s" : ""} ajouté${done > 1 ? "s" : ""} ✓`;
+    fab.disabled = false; fab.classList.remove("busy");
+    if (!failed.length) status(`${done} souvenir${done > 1 ? "s" : ""} ajouté${done > 1 ? "s" : ""} ✓`);
     else {
-      prog.classList.add("err");
       const why = failed[0].why;
       const reason = why === "video_type" ? "les vidéos iPhone (.mov) ne passent pas, enregistrez-les en MP4 ou choisissez « Le plus compatible » dans Réglages › Appareil photo › Formats"
         : why === "video_size" ? "une vidéo dépasse 20 Mo, raccourcissez-la"
         : why === "quota_or_state" ? "l'espace de l'album est plein"
         : why === "rate_limited" ? "trop d'envois d'un coup, réessayez dans une minute"
         : "format non reconnu";
-      prog.textContent = `${done} ajouté${done > 1 ? "s" : ""}, ${failed.length} refusé${failed.length > 1 ? "s" : ""} : ${reason}.`;
+      status(`${done} ajouté${done > 1 ? "s" : ""}, ${failed.length} refusé${failed.length > 1 ? "s" : ""} : ${reason}.`, false, 9000);
     }
     $("file").value = "";
   }
 
-  $("pick").addEventListener("click", () => $("file").click());
   $("fab").addEventListener("click", () => $("file").click());
   $("file").addEventListener("change", e => handleFiles(e.target.files));
-  const up = $("upload");
-  ["dragenter", "dragover"].forEach(t => up.addEventListener(t, e => { e.preventDefault(); up.classList.add("drag"); }));
-  ["dragleave", "drop"].forEach(t => up.addEventListener(t, e => { e.preventDefault(); up.classList.remove("drag"); }));
-  up.addEventListener("drop", e => handleFiles(e.dataTransfer.files));
+  ["dragenter", "dragover"].forEach(t => document.addEventListener(t, e => { if (canWrite) e.preventDefault(); }));
+  document.addEventListener("drop", e => { if (!canWrite) return; e.preventDefault(); handleFiles(e.dataTransfer.files); });
 
   /* ---------------- Connexion au stockage ---------------- */
   renderEmpty();
@@ -823,7 +933,6 @@ footer { padding-bottom: 110px !important; }
     let mayWrite = true;
     try { const w = u && await u.can("data.write"); if (w === false) mayWrite = false; } catch (e) {}
     canWrite = !!assets && mayWrite;
-    $("upload").hidden = !canWrite;
     $("fab").hidden = !canWrite;
     db.collection("photos").orderBy("takenAt").onSnapshot(snap => {
       photos = snap.docs.map(s => ({ id: s.id, ...s.data() }));
