@@ -1,0 +1,808 @@
+<title>Alycia &amp; Ilyas · Noël enchanté</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Pinyon+Script&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: une nuit d'hiver au pied du château (hero en canvas), puis l'album en chapitres par jour, mosaïque de photos. Un seul univers sombre, choisi exprès. */
+:root {
+  --night: #0c1330;
+  --night-2: #141e47;
+  --night-3: #1d2a5c;
+  --snow: #f5f0e6;
+  --frost: #a9b8de;
+  --gold: #e9c46f;
+  --gold-soft: rgba(233, 196, 111, .16);
+  --holly: #d9534a;
+  --line: rgba(169, 184, 222, .18);
+  --f-display: "Cinzel Decorative", "Trajan Pro", Georgia, serif;
+  --f-script: "Pinyon Script", "Snell Roundhand", "Apple Chancery", cursive;
+  --f-body: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+.nowrap { white-space: nowrap; }
+body {
+  background: var(--night);
+  color: var(--snow);
+  font: 400 16px/1.55 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 6px; }
+
+/* ---------- Hero ---------- */
+.hero {
+  position: relative;
+  overflow: hidden;
+  min-height: 440px;
+  background: radial-gradient(120% 90% at 50% 100%, var(--night-3) 0%, var(--night-2) 40%, var(--night) 78%);
+  border-bottom: 1px solid var(--line);
+}
+.hero canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 48px 16px 210px;
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+.eyebrow {
+  font: 600 12px/1.2 var(--f-body);
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.names {
+  font: 400 clamp(54px, 13vw, 104px)/1 var(--f-script);
+  margin: 6px 0 0;
+  color: var(--snow);
+  text-shadow: 0 0 28px rgba(233, 196, 111, .35);
+  text-wrap: balance;
+}
+.names .amp { color: var(--gold); padding: 0 .08em; }
+.subtitle {
+  font: 700 clamp(15px, 3.6vw, 21px)/1.3 var(--f-display);
+  letter-spacing: .04em;
+  margin: 4px 0 0;
+  text-wrap: balance;
+}
+.countdown {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 16px;
+  border: 1px solid var(--gold-soft);
+  background: rgba(12, 19, 48, .55);
+  backdrop-filter: blur(6px);
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--frost);
+  font-variant-numeric: tabular-nums;
+}
+.countdown b { color: var(--gold); font-weight: 600; }
+
+/* ---------- Main ---------- */
+main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-block: 28px 80px;
+  display: grid;
+  gap: 28px;
+}
+
+.toolbar {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  background: linear-gradient(var(--night) 70%, rgba(12, 19, 48, 0));
+}
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--frost);
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.chip:hover { color: var(--snow); border-color: var(--frost); }
+.chip[aria-pressed="true"] { background: var(--snow); color: var(--night); border-color: var(--snow); }
+.chip .n { opacity: .6; margin-left: 4px; font-variant-numeric: tabular-nums; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 600;
+  font-size: 15px;
+  background: var(--gold);
+  color: var(--night);
+  box-shadow: 0 6px 24px rgba(233, 196, 111, .25);
+  transition: transform .15s, box-shadow .15s;
+}
+.btn:hover { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(233, 196, 111, .35); }
+.btn:disabled { opacity: .6; cursor: progress; transform: none; }
+.btn.ghost { background: transparent; color: var(--snow); border: 1px solid var(--line); box-shadow: none; }
+.btn.danger { background: var(--holly); color: var(--snow); box-shadow: none; }
+.btn svg { width: 18px; height: 18px; }
+
+/* Upload panel */
+.upload {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px dashed rgba(233, 196, 111, .45);
+  border-radius: 18px;
+  background: rgba(20, 30, 71, .55);
+}
+.upload.drag { background: var(--gold-soft); border-style: solid; }
+.upload-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.upload h2 { margin: 0; font: 700 17px/1.3 var(--f-display); letter-spacing: .03em; }
+.upload p { margin: 0; color: var(--frost); font-size: 14px; max-width: 62ch; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.seg label {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: 999px; border: 1px solid var(--line);
+  font-size: 14px; color: var(--frost); cursor: pointer;
+}
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg input:checked + span { color: var(--night); }
+.seg label:has(input:checked) { background: var(--gold); border-color: var(--gold); color: var(--night); font-weight: 600; }
+.seg label:has(input:focus-visible) { outline: 2px solid var(--gold); outline-offset: 2px; }
+.progress { font-size: 14px; color: var(--gold); font-variant-numeric: tabular-nums; min-height: 1.4em; }
+.progress.err { color: var(--holly); }
+
+/* Stats */
+.stats { display: flex; flex-wrap: wrap; gap: 6px 20px; color: var(--frost); font-size: 14px; font-variant-numeric: tabular-nums; }
+.stats b { color: var(--snow); font-weight: 600; }
+
+/* Chapters */
+.chapter { display: grid; gap: 16px; }
+.chapter-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 16px; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+.chapter-head h2 { margin: 0; font: 700 clamp(22px, 4vw, 30px)/1.15 var(--f-display); letter-spacing: .02em; }
+.chapter-head .date { font: 400 clamp(24px, 4.5vw, 32px)/1 var(--f-script); color: var(--gold); }
+.chapter-head .count { margin-left: auto; color: var(--frost); font-size: 14px; font-variant-numeric: tabular-nums; }
+
+.grid { columns: 3 260px; column-gap: 12px; }
+.tile {
+  break-inside: avoid;
+  margin: 0 0 12px;
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--night-2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+}
+.tile img, .tile video { display: block; width: 100%; height: auto; min-height: 120px; object-fit: cover; transition: transform .5s ease; }
+.tile:hover img, .tile:hover video { transform: scale(1.03); }
+.tile .cap {
+  position: absolute; inset: auto 0 0 0;
+  padding: 28px 12px 10px;
+  text-align: left;
+  font-size: 14px;
+  background: linear-gradient(transparent, rgba(8, 12, 32, .85));
+  color: var(--snow);
+}
+.tile .badge {
+  position: absolute; top: 10px; right: 10px;
+  display: grid; place-items: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(8, 12, 32, .6); backdrop-filter: blur(4px);
+}
+.tile .badge svg { width: 16px; height: 16px; }
+.tile .badge.play { left: 10px; right: auto; }
+.tile.broken { min-height: 140px; display: grid; place-items: center; color: var(--frost); font-size: 13px; }
+
+/* Empty state */
+.empty {
+  text-align: center;
+  padding: 48px 20px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: radial-gradient(80% 120% at 50% 0%, var(--night-2), var(--night));
+  display: grid; gap: 10px; justify-items: center;
+}
+.empty .orn { font: 400 44px/1 var(--f-script); color: var(--gold); }
+.empty h2 { margin: 0; font: 700 22px/1.3 var(--f-display); text-wrap: balance; }
+.empty p { margin: 0; color: var(--frost); max-width: 52ch; }
+.empty .hint { font-size: 14px; }
+
+footer { text-align: center; color: var(--frost); font-size: 13px; padding: 0 16px 40px; }
+footer .script { font: 400 26px/1 var(--f-script); color: var(--gold); display: block; margin-bottom: 6px; }
+
+/* Lightbox */
+.lb {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(6, 9, 24, .96);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+}
+.lb-top, .lb-bottom { display: flex; align-items: center; gap: 10px; padding: 12px 16px; flex-wrap: wrap; }
+.lb-top { justify-content: space-between; color: var(--frost); font-size: 14px; }
+.lb-top .where { font-variant-numeric: tabular-nums; }
+.lb-stage { position: relative; display: grid; place-items: center; min-height: 0; padding: 0 16px; }
+.lb-stage img, .lb-stage video { max-width: 100%; max-height: 100%; border-radius: 10px; object-fit: contain; }
+.lb-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 1px solid var(--line); background: rgba(12, 19, 48, .7);
+  display: grid; place-items: center;
+}
+.lb-nav svg { width: 22px; height: 22px; }
+.lb-nav.prev { left: 12px; }
+.lb-nav.next { right: 12px; }
+.icon-btn { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 8px 12px; display: inline-flex; gap: 6px; align-items: center; font-size: 14px; }
+.icon-btn svg { width: 18px; height: 18px; }
+.icon-btn[aria-pressed="true"] { border-color: var(--holly); color: var(--snow); }
+.icon-btn[aria-pressed="true"] svg { fill: var(--holly); stroke: var(--holly); }
+.lb-bottom { justify-content: center; }
+.caption-input {
+  flex: 1 1 280px; min-width: 0; max-width: 560px;
+  background: var(--night-2); border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 14px; font-size: 15px;
+}
+.caption-input::placeholder { color: var(--frost); opacity: .7; }
+.caption-read { font: 400 26px/1.2 var(--f-script); color: var(--snow); text-align: center; flex: 1 1 100%; }
+.day-move { background: var(--night-2); border: 1px solid var(--line); border-radius: 12px; padding: 9px 10px; font-size: 14px; }
+.confirm { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; color: var(--snow); }
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+  z-index: 60; background: var(--snow); color: var(--night); padding: 10px 18px; border-radius: 999px;
+  font-size: 14px; font-weight: 500; box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
+}
+
+@media (max-width: 520px) {
+  .hero { min-height: 380px; }
+  .hero-inner { padding: 36px 16px 170px; }
+  .grid { columns: 2 140px; column-gap: 8px; }
+  .tile { margin-bottom: 8px; border-radius: 10px; }
+  .lb-nav { width: 40px; height: 40px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tile img, .tile video, .btn { transition: none; }
+}
+</style>
+
+<header class="hero" aria-label="Couverture de l'album">
+  <canvas id="sky" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <span class="eyebrow">Notre album de Noël</span>
+    <h1 class="names">Alycia <span class="amp">&amp;</span> Ilyas</h1>
+    <p class="subtitle"><span class="nowrap">Disneyland Paris</span> · <span class="nowrap">17 &amp; 18 décembre 2026</span></p>
+    <div class="countdown" id="countdown">…</div>
+  </div>
+</header>
+
+<main>
+  <section class="upload" id="upload" hidden aria-labelledby="upload-title">
+    <div class="upload-row">
+      <div>
+        <h2 id="upload-title">Ajouter des souvenirs</h2>
+        <p>Photos et vidéos depuis le téléphone ou l'ordinateur. Les originaux sont gardés en pleine qualité, pratique pour le livre photo.</p>
+      </div>
+      <button class="btn" id="pick" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        Ajouter des photos
+      </button>
+      <input type="file" id="file" accept="image/*,video/mp4,video/webm" multiple hidden>
+    </div>
+    <div class="upload-row">
+      <div class="seg" role="radiogroup" aria-label="Ranger dans">
+        <label><input type="radio" name="dest" id="dest-auto" value="auto" checked><span>Ranger selon la date</span></label>
+        <label><input type="radio" name="dest" id="dest-d1" value="d1"><span>Jour 1</span></label>
+        <label><input type="radio" name="dest" id="dest-d2" value="d2"><span>Jour 2</span></label>
+        <label><input type="radio" name="dest" id="dest-extra" value="extra"><span>Autour du voyage</span></label>
+      </div>
+      <div class="progress" id="progress" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <div class="toolbar" id="toolbar" hidden>
+    <div class="chips" id="chips" role="group" aria-label="Filtrer l'album"></div>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <div id="album"></div>
+</main>
+
+<footer>
+  <span class="script">Il était une fois, à Noël…</span>
+  Album privé d'Alycia et Ilyas
+</footer>
+
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="Photo en grand">
+  <div class="lb-top">
+    <span class="where" id="lb-where"></span>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="icon-btn" id="lb-fav" type="button" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.4 3.1 5 6.4 5c2 0 3.6 1.2 4.4 2.6h2.4C14 6.2 15.6 5 17.6 5c3.3 0 5.1 3.4 3.6 6.4C19 15.6 12 20 12 20z"/></svg>
+        <span>Coup de cœur</span>
+      </button>
+      <button class="icon-btn" id="lb-dl" type="button" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+        <span>Télécharger</span>
+      </button>
+      <button class="icon-btn" id="lb-close" type="button" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="lb-stage" id="lb-stage">
+    <button class="lb-nav prev" id="lb-prev" type="button" aria-label="Photo précédente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="lb-nav next" id="lb-next" type="button" aria-label="Photo suivante"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+  <div class="lb-bottom" id="lb-bottom"></div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+  "use strict";
+
+  /* ---------------- Ciel, neige et château ---------------- */
+  const canvas = document.getElementById("sky");
+  const ctx = canvas.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W = 0, H = 0, flakes = [], stars = [], raf = 0;
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function resize() {
+    const r = canvas.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = r.width; H = r.height;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const nF = Math.round(Math.min(160, W / 7));
+    flakes = Array.from({ length: nF }, () => ({ x: rand(0, W), y: rand(0, H), r: rand(.6, 2.6), s: rand(.25, 1), d: rand(0, Math.PI * 2) }));
+    stars = Array.from({ length: Math.round(W / 9) }, () => ({ x: rand(0, W), y: rand(0, H * .6), r: rand(.3, 1.2), p: rand(0, Math.PI * 2) }));
+    draw(0);
+  }
+
+  function tower(x, base, w, h, roof, s, t) {
+    const X = x * s, Wd = w * s, Ht = h * s, Rf = roof * s;
+    ctx.fillRect(X - Wd / 2, base - Ht, Wd, Ht);
+    ctx.beginPath();
+    ctx.moveTo(X - Wd / 2 - 3 * s, base - Ht);
+    ctx.lineTo(X, base - Ht - Rf);
+    ctx.lineTo(X + Wd / 2 + 3 * s, base - Ht);
+    ctx.closePath();
+    ctx.fill();
+    // fenêtres dorées qui scintillent
+    const keep = ctx.fillStyle;
+    const glow = .65 + .35 * Math.sin(t / 900 + x);
+    ctx.fillStyle = `rgba(233,196,111,${glow})`;
+    const ww = Math.max(2, 5 * s), wh = Math.max(3, 9 * s);
+    for (let i = 1; i <= Math.floor(h / 45); i++) {
+      ctx.fillRect(X - ww / 2, base - Ht + i * 38 * s - wh, ww, wh);
+    }
+    // fanion
+    ctx.fillRect(X - .5, base - Ht - Rf - 10 * s, 1, 10 * s);
+    ctx.fillStyle = keep;
+  }
+
+  function drawCastle(t) {
+    const s = Math.min(1, W / 640) * (H / 440);
+    const cx = W / 2, base = H - 26;
+    ctx.save();
+    ctx.translate(cx, 0);
+    ctx.fillStyle = "#2f3e80";
+    ctx.fillRect(-235 * s, base - 46 * s, 470 * s, 46 * s);
+    const T = [
+      [-205, 22, 58, 34], [205, 22, 58, 34],
+      [-160, 40, 82, 44], [160, 40, 82, 44],
+      [-112, 28, 110, 58], [112, 28, 110, 58],
+      [-62, 36, 140, 74], [62, 36, 140, 74],
+      [0, 62, 176, 116]
+    ];
+    for (const [x, w, h, r] of T) tower(x, base, w, h, r, s, t);
+    // porte
+    ctx.fillStyle = "rgba(233,196,111,.85)";
+    ctx.beginPath();
+    ctx.moveTo(-14 * s, base); ctx.lineTo(-14 * s, base - 22 * s);
+    ctx.arc(0, base - 22 * s, 14 * s, Math.PI, 0);
+    ctx.lineTo(14 * s, base); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    // colline enneigée
+    ctx.fillStyle = "#e9e6f2";
+    ctx.beginPath();
+    ctx.moveTo(0, H);
+    ctx.quadraticCurveTo(W * .25, H - 40, W * .5, H - 30);
+    ctx.quadraticCurveTo(W * .75, H - 22, W, H - 44);
+    ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+  }
+
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    for (const st of stars) {
+      const a = .35 + .45 * Math.sin(t / 700 + st.p);
+      ctx.fillStyle = `rgba(245,240,230,${a})`;
+      ctx.beginPath(); ctx.arc(st.x, st.y, st.r, 0, 7); ctx.fill();
+    }
+    drawCastle(t);
+    ctx.fillStyle = "rgba(255,255,255,.85)";
+    for (const f of flakes) {
+      if (!reduce) {
+        f.y += f.s * .9; f.d += .01; f.x += Math.sin(f.d) * .35;
+        if (f.y > H + 4) { f.y = -4; f.x = rand(0, W); }
+      }
+      ctx.globalAlpha = .45 + f.r / 5;
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r, 0, 7); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function loop(t) { draw(t); raf = requestAnimationFrame(loop); }
+  new ResizeObserver(resize).observe(canvas);
+  resize();
+  if (!reduce) raf = requestAnimationFrame(loop);
+  document.addEventListener("visibilitychange", () => {
+    if (reduce) return;
+    if (document.hidden) cancelAnimationFrame(raf); else raf = requestAnimationFrame(loop);
+  });
+
+  /* ---------------- Compte à rebours ---------------- */
+  const TRIP_START = new Date(2026, 11, 17);
+  const TRIP_END = new Date(2026, 11, 18);
+  function countdown() {
+    const el = document.getElementById("countdown");
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const days = Math.round((TRIP_START - today) / 86400000);
+    if (days > 1) el.innerHTML = `Plus que <b>${days} nuits</b> avant le château`;
+    else if (days === 1) el.innerHTML = `C'est <b>demain</b> ! Valises prêtes ?`;
+    else if (today <= TRIP_END) el.innerHTML = `<b>C'est aujourd'hui</b>, profitez de la magie`;
+    else el.innerHTML = `Souvenirs du <b>17 &amp; 18 décembre 2026</b>`;
+  }
+  countdown();
+
+  /* ---------------- Album ---------------- */
+  const CHAPTERS = [
+    { key: "d1", title: "Jour 1", date: "jeudi 17 décembre" },
+    { key: "d2", title: "Jour 2", date: "vendredi 18 décembre" },
+    { key: "extra", title: "Autour du voyage", date: "avant & après" }
+  ];
+  const chapterOf = k => CHAPTERS.find(c => c.key === k) || CHAPTERS[2];
+
+  const $ = id => document.getElementById(id);
+  const albumEl = $("album"), chipsEl = $("chips"), statsEl = $("stats");
+  let db = null, assets = null, downloads = null;
+  let canWrite = false, ready = false, loadError = "";
+  let photos = [];
+  let filter = "all";
+  try { const f = localStorage.getItem("album-filter"); if (f) filter = f; } catch (e) {}
+  let view = [];       // liste visible, dans l'ordre, pour la visionneuse
+  let current = -1;    // index dans view
+
+  const src = p => "/_blob/" + p.asset;
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  function toast(msg) {
+    const t = $("toast"); t.textContent = msg; t.hidden = false;
+    clearTimeout(toast._t); toast._t = setTimeout(() => { t.hidden = true; }, 2600);
+  }
+
+  const heart = '<svg viewBox="0 0 24 24" fill="#d9534a" stroke="#d9534a" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 20s-7-4.4-9.2-8.6C1.3 8.4 3.1 5 6.4 5c2 0 3.6 1.2 4.4 2.6h2.4C14 6.2 15.6 5 17.6 5c3.3 0 5.1 3.4 3.6 6.4C19 15.6 12 20 12 20z"/></svg>';
+  const play = '<svg viewBox="0 0 24 24" fill="#f5f0e6" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>';
+
+  function renderChips() {
+    const n = k => photos.filter(p => k === "fav" ? p.fav : p.day === k).length;
+    const items = [["all", "Tout", photos.length], ...CHAPTERS.map(c => [c.key, c.title, n(c.key)]), ["fav", "Coups de cœur", n("fav")]];
+    chipsEl.innerHTML = items
+      .filter(([k, , c]) => k === "all" || c > 0 || k === filter)
+      .map(([k, label, c]) => `<button class="chip" type="button" data-f="${k}" aria-pressed="${filter === k}">${esc(label)}<span class="n">${c}</span></button>`)
+      .join("");
+    const vids = photos.filter(p => p.kind === "video").length;
+    const favs = n("fav");
+    statsEl.innerHTML = `<span><b>${photos.length - vids}</b> photo${photos.length - vids > 1 ? "s" : ""}</span>` +
+      (vids ? `<span><b>${vids}</b> vidéo${vids > 1 ? "s" : ""}</span>` : "") +
+      (favs ? `<span><b>${favs}</b> coup${favs > 1 ? "s" : ""} de cœur</span>` : "");
+  }
+
+  function renderEmpty() {
+    let hint;
+    if (!ready && !loadError) hint = "Chargement de l'album…";
+    else if (loadError) hint = loadError;
+    else if (canWrite) hint = "Touchez « Ajouter des photos » juste au-dessus. Les photos prises le 17 vont dans le Jour 1, celles du 18 dans le Jour 2.";
+    else hint = "Les photos apparaîtront ici dès qu'Alycia ou Ilyas en auront ajouté.";
+    albumEl.innerHTML = `<div class="empty">
+      <div class="orn" aria-hidden="true">✦</div>
+      <h2>L'album attend ses premières photos</h2>
+      <p>Deux chapitres sont prêts : le Jour 1 du jeudi 17 décembre et le Jour 2 du vendredi 18. Un troisième, « Autour du voyage », accueille le trajet, l'hôtel et tout ce qui vient avant ou après.</p>
+      <p class="hint">${esc(hint)}</p>
+    </div>`;
+  }
+
+  function render() {
+    $("toolbar").hidden = photos.length === 0;
+    if (!photos.length) { view = []; renderEmpty(); return; }
+    renderChips();
+    const vis = photos.filter(p => filter === "all" ? true : filter === "fav" ? p.fav : p.day === filter);
+    view = [];
+    let html = "";
+    for (const c of CHAPTERS) {
+      const list = vis.filter(p => (CHAPTERS.some(x => x.key === p.day) ? p.day : "extra") === c.key);
+      if (!list.length) continue;
+      html += `<section class="chapter" aria-label="${esc(c.title)}">
+        <div class="chapter-head"><h2>${esc(c.title)}</h2><span class="date">${esc(c.date)}</span>
+        <span class="count">${list.length} souvenir${list.length > 1 ? "s" : ""}</span></div><div class="grid">`;
+      for (const p of list) {
+        const i = view.push(p) - 1;
+        const media = p.kind === "video"
+          ? `<video src="${src(p)}#t=0.1" muted playsinline preload="metadata"></video><span class="badge play">${play}</span>`
+          : `<img src="${src(p)}" alt="${esc(p.caption || "Photo du " + c.date)}" loading="lazy" decoding="async">`;
+        html += `<button class="tile" type="button" data-i="${i}" aria-label="Ouvrir ${esc(p.caption || "la photo")}">${media}` +
+          (p.fav ? `<span class="badge">${heart}</span>` : "") +
+          (p.caption ? `<span class="cap">${esc(p.caption)}</span>` : "") + `</button>`;
+      }
+      html += `</div></section>`;
+    }
+    albumEl.innerHTML = html || `<div class="empty"><h2>Rien ici pour l'instant</h2><p>Aucune photo dans ce filtre.</p></div>`;
+    albumEl.querySelectorAll(".tile img, .tile video").forEach(m => m.addEventListener("error", () => {
+      const t = m.closest(".tile"); t.classList.add("broken"); m.remove();
+      t.insertAdjacentHTML("afterbegin", "<span>Fichier introuvable</span>");
+    }, { once: true }));
+    if (!$("lb").hidden) syncLightbox();
+  }
+
+  chipsEl.addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    filter = b.dataset.f;
+    try { localStorage.setItem("album-filter", filter); } catch (e) {}
+    render();
+  });
+  albumEl.addEventListener("click", e => {
+    const t = e.target.closest(".tile"); if (!t) return;
+    openLightbox(+t.dataset.i);
+  });
+
+  /* ---------------- Visionneuse ---------------- */
+  let confirmDelete = false, lastFocus = null;
+  function openLightbox(i) {
+    lastFocus = document.activeElement;
+    current = i; confirmDelete = false;
+    $("lb").hidden = false;
+    document.body.style.overflow = "hidden";
+    drawLightbox();
+    $("lb-close").focus();
+  }
+  function closeLightbox() {
+    const v = $("lb-stage").querySelector("video"); if (v) v.pause();
+    $("lb").hidden = true; document.body.style.overflow = "";
+    if (lastFocus) lastFocus.focus();
+  }
+  function step(d) {
+    if (!view.length) return;
+    current = (current + d + view.length) % view.length; confirmDelete = false; drawLightbox();
+  }
+  function syncLightbox() {
+    // après une mise à jour en direct, rester sur la même photo si elle existe encore
+    const id = $("lb").dataset.id;
+    const i = view.findIndex(p => p.id === id);
+    if (i === -1) { if (view.length) { current = Math.min(current, view.length - 1); drawLightbox(); } else closeLightbox(); }
+    else { current = i; drawLightbox(true); }
+  }
+  function drawLightbox(soft) {
+    const p = view[current]; if (!p) return;
+    const lb = $("lb"), stage = $("lb-stage");
+    const sameMedia = lb.dataset.id === p.id;
+    lb.dataset.id = p.id;
+    const c = chapterOf(p.day);
+    $("lb-where").textContent = `${c.title} · ${c.date} — ${current + 1} / ${view.length}`;
+    $("lb-fav").setAttribute("aria-pressed", String(!!p.fav));
+    $("lb-fav").hidden = !canWrite && !p.fav;
+    $("lb-fav").disabled = !canWrite;
+    $("lb-dl").hidden = !downloads;
+    $("lb-prev").hidden = $("lb-next").hidden = view.length < 2;
+    if (!(soft && sameMedia)) {
+      stage.querySelectorAll("img,video").forEach(n => n.remove());
+      const m = document.createElement(p.kind === "video" ? "video" : "img");
+      m.src = src(p);
+      if (p.kind === "video") { m.controls = true; m.playsInline = true; }
+      else m.alt = p.caption || "Photo de l'album";
+      stage.prepend(m);
+    }
+    const bottom = $("lb-bottom");
+    if (soft && bottom.contains(document.activeElement) && document.activeElement.id === "lb-caption") return;
+    if (canWrite) {
+      bottom.innerHTML = `
+        <input class="caption-input" id="lb-caption" maxlength="140" placeholder="Écrire une légende… (ex. Parade de Noël, chocolat chaud)" value="${esc(p.caption)}">
+        <select class="day-move" id="lb-day" aria-label="Chapitre">
+          ${CHAPTERS.map(x => `<option value="${x.key}" ${x.key === (p.day || "extra") ? "selected" : ""}>${esc(x.title)}</option>`).join("")}
+        </select>
+        ${confirmDelete
+          ? `<span class="confirm">Supprimer pour de bon ?<button class="btn danger" id="lb-del-yes" type="button">Supprimer</button><button class="btn ghost" id="lb-del-no" type="button">Annuler</button></span>`
+          : `<button class="icon-btn" id="lb-del" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg><span>Supprimer</span></button>`}`;
+    } else {
+      bottom.innerHTML = p.caption ? `<p class="caption-read">${esc(p.caption)}</p>` : "";
+    }
+  }
+
+  $("lb-close").addEventListener("click", closeLightbox);
+  $("lb-prev").addEventListener("click", () => step(-1));
+  $("lb-next").addEventListener("click", () => step(1));
+  document.addEventListener("keydown", e => {
+    if ($("lb").hidden) return;
+    if (e.target.matches && e.target.matches("input, select")) { if (e.key === "Escape") e.target.blur(); return; }
+    if (e.key === "Escape") closeLightbox();
+    else if (e.key === "ArrowLeft") step(-1);
+    else if (e.key === "ArrowRight") step(1);
+  });
+  let touchX = null;
+  $("lb-stage").addEventListener("touchstart", e => { touchX = e.touches[0].clientX; }, { passive: true });
+  $("lb-stage").addEventListener("touchend", e => {
+    if (touchX === null) return;
+    const dx = e.changedTouches[0].clientX - touchX; touchX = null;
+    if (Math.abs(dx) > 50) step(dx < 0 ? 1 : -1);
+  });
+
+  async function patch(p, data) {
+    try { await db.collection("photos").doc(p.id).update(data); }
+    catch (e) { toast(e && e.code === "invalid_argument" ? "Vous n'avez pas le droit de modifier cet album." : "La modification n'a pas été enregistrée. Réessayez."); }
+  }
+  $("lb-fav").addEventListener("click", () => { const p = view[current]; if (p && canWrite) patch(p, { fav: !p.fav }); });
+  $("lb-bottom").addEventListener("change", e => {
+    const p = view[current]; if (!p) return;
+    if (e.target.id === "lb-caption") { const v = e.target.value.trim(); if (v !== (p.caption || "")) patch(p, { caption: v }); }
+    if (e.target.id === "lb-day") patch(p, { day: e.target.value });
+  });
+  $("lb-bottom").addEventListener("keydown", e => { if (e.target.id === "lb-caption" && e.key === "Enter") e.target.blur(); });
+  $("lb-bottom").addEventListener("click", async e => {
+    const id = e.target.closest("button")?.id; const p = view[current]; if (!p) return;
+    if (id === "lb-del") { confirmDelete = true; drawLightbox(true); }
+    else if (id === "lb-del-no") { confirmDelete = false; drawLightbox(true); }
+    else if (id === "lb-del-yes") {
+      try {
+        await db.collection("photos").doc(p.id).delete();
+        try { await assets.delete(p.asset); } catch (err) {}
+        toast("Souvenir supprimé");
+      } catch (err) { toast("La suppression a échoué. Réessayez."); }
+    }
+  });
+  $("lb-dl").addEventListener("click", async () => {
+    const p = view[current]; if (!p || !downloads) return;
+    try {
+      const blob = await (await fetch(src(p))).blob();
+      const ext = (p.name && p.name.includes(".")) ? "" : (blob.type.split("/")[1] || "jpg").replace("jpeg", "jpg");
+      const base = p.name || `alycia-ilyas-${p.day}-${current + 1}`;
+      const r = await downloads.save({ filename: ext ? `${base}.${ext}` : base, data: blob });
+      if (r && r.status === "saved") toast("Photo enregistrée");
+    } catch (e) {
+      if (e && e.code === "declined") return;
+      toast("Le téléchargement n'a pas pu se faire.");
+    }
+  });
+
+  /* ---------------- Ajout de photos ---------------- */
+  const OK_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "video/mp4", "video/webm"];
+  const MAX = 20 * 1024 * 1024;
+
+  function dayFromDate(ms) {
+    const d = new Date(ms);
+    if (d.getFullYear() === 2026 && d.getMonth() === 11) {
+      if (d.getDate() === 17) return "d1";
+      if (d.getDate() === 18) return "d2";
+    }
+    return null;
+  }
+
+  async function toJpeg(file) {
+    // HEIC ou image trop lourde : on la réencode en JPEG haute qualité
+    let bmp;
+    try { bmp = await createImageBitmap(file, { imageOrientation: "from-image" }); }
+    catch (e) {
+      bmp = await new Promise((res, rej) => {
+        const url = URL.createObjectURL(file); const im = new Image();
+        im.onload = () => { URL.revokeObjectURL(url); res(im); };
+        im.onerror = () => { URL.revokeObjectURL(url); rej(new Error("decode")); };
+        im.src = url;
+      });
+    }
+    const w0 = bmp.width, h0 = bmp.height, k = Math.min(1, 4096 / Math.max(w0, h0));
+    const c = document.createElement("canvas"); c.width = Math.round(w0 * k); c.height = Math.round(h0 * k);
+    c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+    for (const q of [.92, .85, .75]) {
+      const b = await new Promise(r => c.toBlob(r, "image/jpeg", q));
+      if (b && b.size <= MAX) return b;
+    }
+    throw new Error("too_large");
+  }
+
+  async function handleFiles(files) {
+    if (!canWrite || !files.length) return;
+    const dest = document.querySelector('input[name="dest"]:checked').value;
+    const prog = $("progress"); prog.classList.remove("err");
+    const pick = $("pick"); pick.disabled = true;
+    let done = 0, failed = [];
+    const list = [...files];
+    for (const f of list) {
+      prog.textContent = `Envoi ${done + failed.length + 1} sur ${list.length}…`;
+      try {
+        const isVideo = f.type.startsWith("video/");
+        let blob = f;
+        if (isVideo) {
+          if (!OK_TYPES.includes(f.type)) throw new Error("video_type");
+          if (f.size > MAX) throw new Error("video_size");
+        } else if (!OK_TYPES.includes(f.type) || f.size > MAX) {
+          blob = await toJpeg(f);
+        }
+        const up = await assets.upload(blob, OK_TYPES.includes(blob.type) ? undefined : { type: "image/jpeg" });
+        const day = dest === "auto" ? (dayFromDate(f.lastModified) || "extra") : dest;
+        await db.collection("photos").add({
+          asset: up.id, kind: isVideo ? "video" : "image", day,
+          caption: "", fav: false, name: f.name || "",
+          takenAt: f.lastModified || Date.now(), addedAt: Date.now()
+        });
+        done++;
+      } catch (e) {
+        failed.push({ name: f.name, why: e && (e.code || e.message) });
+      }
+    }
+    pick.disabled = false;
+    if (!failed.length) prog.textContent = `${done} souvenir${done > 1 ? "s" : ""} ajouté${done > 1 ? "s" : ""} ✓`;
+    else {
+      prog.classList.add("err");
+      const why = failed[0].why;
+      const reason = why === "video_type" ? "les vidéos iPhone (.mov) ne passent pas, enregistrez-les en MP4 ou choisissez « Le plus compatible » dans Réglages › Appareil photo › Formats"
+        : why === "video_size" ? "une vidéo dépasse 20 Mo, raccourcissez-la"
+        : why === "quota_or_state" ? "l'espace de l'album est plein"
+        : why === "rate_limited" ? "trop d'envois d'un coup, réessayez dans une minute"
+        : "format non reconnu";
+      prog.textContent = `${done} ajouté${done > 1 ? "s" : ""}, ${failed.length} refusé${failed.length > 1 ? "s" : ""} : ${reason}.`;
+    }
+    $("file").value = "";
+  }
+
+  $("pick").addEventListener("click", () => $("file").click());
+  $("file").addEventListener("change", e => handleFiles(e.target.files));
+  const up = $("upload");
+  ["dragenter", "dragover"].forEach(t => up.addEventListener(t, e => { e.preventDefault(); up.classList.add("drag"); }));
+  ["dragleave", "drop"].forEach(t => up.addEventListener(t, e => { e.preventDefault(); up.classList.remove("drag"); }));
+  up.addEventListener("drop", e => handleFiles(e.dataTransfer.files));
+
+  /* ---------------- Connexion au stockage ---------------- */
+  renderEmpty();
+  async function boot() {
+    const C = window.claude;
+    if (!C || !C.use) { loadError = "Ouvrez l'album depuis son lien claude.ai pour voir et ajouter les photos."; renderEmpty(); return; }
+    const [d, a, dl, u] = await Promise.all(["db", "assets", "downloads", "user"].map(n => C.use(n).catch(() => null)));
+    db = d; assets = a; downloads = dl;
+    if (!db) { loadError = "Connectez-vous à claude.ai pour voir les photos de l'album."; renderEmpty(); return; }
+    let mayWrite = true;
+    try { const w = u && await u.can("data.write"); if (w === false) mayWrite = false; } catch (e) {}
+    canWrite = !!assets && mayWrite;
+    $("upload").hidden = !canWrite;
+    db.collection("photos").orderBy("takenAt").onSnapshot(snap => {
+      photos = snap.docs.map(s => ({ id: s.id, ...s.data() }));
+      ready = true; render();
+    }, err => {
+      loadError = err && err.code === "revoked" ? "L'accès à cet album a changé. Rechargez la page." : "L'album n'a pas pu se charger. Rechargez la page.";
+      if (!photos.length) renderEmpty();
+    });
+  }
+  boot();
+})();
+</script>
